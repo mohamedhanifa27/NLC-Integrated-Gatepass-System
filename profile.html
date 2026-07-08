@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - NLC Gate Pass System</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <!--
+    FUTURE FLASK API INTEGRATION MAP:
+    ─────────────────────────────────────────────────────────────────────
+    GET  /api/dashboard/metrics           → metrics cards data
+    GET  /api/passes?user_id=&limit=10    → recent requests table
+    POST /api/auth/logout                 → clear session
+    GET  /api/notifications?user_id=      → notification count + list
+    ─────────────────────────────────────────────────────────────────────
+    All requests require Authorization header: Bearer <jwt_token>
+    Token sourced from sessionStorage key: 'igps_token'
+  -->
+</head>
+<body>
+
+  <!-- Mobile sidebar toggle -->
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Open navigation">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+
+  <!-- Sidebar overlay for mobile -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-shell">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+
+      <!-- Branding -->
+      <div class="sidebar-header">
+        <div class="sidebar-logo-mark">
+          <img src="assets/nlc-logo.png" alt="NLC Logo" class="sidebar-logo">
+        </div>
+
+        <div class="sidebar-logo-text">
+          <div class="logo-title">NLC India Ltd</div>
+          <div class="logo-subtitle">Integrated Gate Pass System</div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav" aria-label="Section navigation">
+
+        <div class="nav-group">
+          <div class="nav-group-label">Overview</div>
+          <div class="nav-item">
+            <a href="dashboard.html" class="nav-link">
+              <span class="nav-link-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              </span>
+              Dashboard
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-label">Gate Passes</div>
+          <div class="nav-item">
+            <a href="#" class="nav-link" onclick="GatePassModule.openModal(); return false;">
+              <span class="nav-link-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              </span>
+              New Gate Pass Request
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="requests.html" class="nav-link">
+              <span class="nav-link-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              </span>
+              My Requests
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="tracking.html" class="nav-link">
+              <span class="nav-link-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </span>
+              Status Tracking
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-label">Other Passes</div>
+          <div class="nav-item">
+            <a href="#" class="nav-link" onclick="VisitorPassModule.openModal(); return false;">
+              <span class="nav-link-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </span>
+              Visitor Pass
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="#" class="nav-link" onclick="MaterialPassModule.openModal(); return false;">
+              <span class="nav-link-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+              </span>
+              Material Pass
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-label">Account</div>
+          <div class="nav-item">
+            <a href="profile.html" class="nav-link" aria-current="page">
+              <span class="nav-link-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </span>
+              My Profile
+            </a>
+          </div>
+          <div class="nav-item">
+            <a href="#" class="nav-link" id="logoutLink">
+              <span class="nav-link-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              </span>
+              Sign Out
+            </a>
+          </div>
+        </div>
+
+      </nav>
+
+      <!-- User card at bottom -->
+      <div class="sidebar-footer">
+        <a href="profile.html" class="sidebar-user-card" style="text-decoration: none; color: inherit;">
+          <div class="user-avatar" aria-hidden="true">RK</div>
+          <div class="user-card-info">
+            <div class="user-card-name">Rajesh Kumar</div>
+            <div class="user-card-role">Electrical Engineering</div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+
+    </aside>
+    <!-- /.sidebar -->
+
+    <main class="main-content" id="mainContent" role="main">
+
+      <!-- ===== TOP BAR ===== -->
+      <header class="topbar" role="banner">
+  
+        <div class="topbar-breadcrumb">
+          <span class="topbar-breadcrumb-module">Gate Pass System</span>
+          <span class="topbar-breadcrumb-sep" aria-hidden="true">/</span>
+          <span class="topbar-breadcrumb-page">My Profile</span>
+        </div>
+  
+        <div class="topbar-right">
+  
+          <!-- Live Date -->
+          <div class="topbar-date" aria-label="Current date and time">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span id="liveDateDisplay">Loading...</span>
+          </div>
+  
+          <!-- Notifications -->
+          <button class="topbar-notif-btn" id="notifBtn" aria-label="Notifications — 2 unread" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-dot" aria-hidden="true"></span>
+          </button>
+  
+          <div class="topbar-divider-v" aria-hidden="true"></div>
+  
+          <!-- Profile -->
+          <a href="profile.html" class="topbar-profile" style="text-decoration: none; color: inherit;">
+            <div class="user-avatar" style="width:32px;height:32px;font-size:var(--text-xs);" aria-hidden="true">—</div>
+              <div class="topbar-profile-info" style="margin-left: var(--sp-3); margin-right: var(--sp-3);">
+                <div class="topbar-profile-name">Loading...</div>
+                <div class="topbar-profile-dept">—</div>
+              </div>
+            </a>
+  
+        </div>
+      </header>
+      <!-- /.topbar -->
+
+      <!-- Profile Content -->
+      <section class="section" style="padding: var(--sp-6) var(--sp-8);">
+        <div class="inline-alert" id="profileAlert" role="alert" style="display: none; margin-bottom: var(--sp-6);"></div>
+
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: var(--sp-8); align-items: start;">
+          <!-- Left Section - Profile Card -->
+          <div style="background: var(--clr-white); border-radius: var(--radius-lg); border: 1px solid var(--clr-border); padding: var(--sp-8); text-align: center; box-shadow: var(--shadow-sm);">
+            <div id="profileAvatar" style="width: 120px; height: 120px; border-radius: 50%; background: var(--clr-primary-400); color: var(--clr-white); display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; margin: 0 auto var(--sp-6);">—</div>
+            <h2 id="profileName" style="font-size: var(--text-2xl); font-weight: var(--fw-bold); color: var(--clr-neutral-900); margin-bottom: var(--sp-2);">Loading...</h2>
+            <div style="margin-bottom: var(--sp-6);">
+              <span id="profileRoleBadge" class="pass-type-tag employee" style="font-size: var(--text-sm); padding: 4px 12px; border-radius: 100px;">—</span>
+            </div>
+            
+            <div style="text-align: left; border-top: 1px solid var(--clr-neutral-200); padding-top: var(--sp-6);">
+              <div style="margin-bottom: var(--sp-4);">
+                <div style="font-size: var(--text-xs); color: var(--clr-neutral-500); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Email Address</div>
+                <div id="profileEmail" style="font-weight: var(--fw-medium); color: var(--clr-neutral-800);">—</div>
+              </div>
+              <div>
+                <div style="font-size: var(--text-xs); color: var(--clr-neutral-500); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Department</div>
+                <div id="profileDeptDisplay" style="font-weight: var(--fw-medium); color: var(--clr-neutral-800);">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Section - Edit Profile Form -->
+          <div style="background: var(--clr-white); border-radius: var(--radius-lg); border: 1px solid var(--clr-border); padding: var(--sp-8); box-shadow: var(--shadow-sm);">
+            <h3 style="font-size: var(--text-lg); font-weight: var(--fw-bold); color: var(--clr-neutral-900); margin-bottom: var(--sp-6); border-bottom: 1px solid var(--clr-neutral-200); padding-bottom: var(--sp-4);">Edit Profile Details</h3>
+            
+            <form id="profileForm">
+              <div class="form-group">
+                <label for="editName" class="form-label">Full Name</label>
+                <input type="text" id="editName" name="name" class="form-control" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="editDepartment" class="form-label">Department</label>
+                <input type="text" id="editDepartment" name="department" class="form-control" required>
+              </div>
+
+              <!-- Collapsible Password Section -->
+              <div style="margin-top: var(--sp-6); margin-bottom: var(--sp-6);">
+                <button type="button" id="togglePasswordBtn" style="background: none; border: none; color: var(--clr-primary-600); font-weight: var(--fw-medium); display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 0;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  Change Password
+                </button>
+                
+                <div id="passwordSection" style="display: none; margin-top: var(--sp-4); padding: var(--sp-4); background: var(--clr-neutral-050); border: 1px solid var(--clr-neutral-200); border-radius: var(--radius-md);">
+                  <div style="margin-bottom: var(--sp-4);">
+                <label for="currentPassword" class="form-label">Current Password</label>
+                <div style="position: relative;">
+                  <input type="password" id="currentPassword" name="current_password" class="form-control" style="padding-right: 40px;">
+                  <button type="button" class="toggle-password-visibility" data-target="currentPassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--clr-primary-600);" aria-label="Toggle visibility">
+                    <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg class="eye-off-icon" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                  </button>
+                </div>
+              </div>
+              <div style="margin-bottom: var(--sp-4);">
+                <label for="newPassword" class="form-label">New Password</label>
+                <div style="position: relative;">
+                  <input type="password" id="newPassword" name="password" class="form-control" style="padding-right: 40px;">
+                  <button type="button" class="toggle-password-visibility" data-target="newPassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--clr-primary-600);" aria-label="Toggle visibility">
+                    <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg class="eye-off-icon" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                  </button>
+                </div>
+              </div>
+              <div style="margin-bottom: var(--sp-6);">
+                <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                <div style="position: relative;">
+                  <input type="password" id="confirmPassword" class="form-control" style="padding-right: 40px;">
+                  <button type="button" class="toggle-password-visibility" data-target="confirmPassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--clr-primary-600);" aria-label="Toggle visibility">
+                    <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg class="eye-off-icon" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                  </button>
+                </div>
+              </div>
+                </div>
+              </div>
+
+              <div style="font-size: var(--text-sm); color: var(--clr-neutral-500); margin-bottom: var(--sp-6);">
+                Note: Your email address and role level cannot be modified. Please contact a system administrator if these need to be updated.
+              </div>
+
+              <div style="display: flex; gap: var(--sp-4); justify-content: flex-end; border-top: 1px solid var(--clr-neutral-200); padding-top: var(--sp-6);">
+                <button type="button" class="btn btn-ghost" id="btnCancelEdit">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btnSaveProfile">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- /.main-content -->
+
+  </div><!-- /.app-shell -->
+
+  <!-- Toast container (for notifications) -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="script.js?v=8"></script>
+  <script src="profile.js"></script>
+</body>
+</html>

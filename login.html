@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NLC India Limited — Integrated Gate Pass System</title>
+  <meta name="description" content="Secure access portal for NLC India Limited Integrated Gate Pass System">
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Google Fonts — Inter (UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Design System -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!--
+    FUTURE INTEGRATION NOTE:
+    This page will POST to Flask endpoint: POST /api/auth/login
+    Payload: { employee_id, password, role, remember_me }
+    Response: { token, user: { id, name, department, role }, redirect_url }
+    Token stored in httpOnly cookie (server-side) + sessionStorage (client-side).
+  -->
+
+  <style>
+    /* Page-specific styles that don't belong in the shared system */
+    .login-brand-middle {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--sp-8) 0;
+    }
+
+    .login-modules-preview {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-3);
+      margin-top: var(--sp-8);
+    }
+
+    .module-preview-item {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-2);
+      font-size: var(--text-xs);
+      color: rgba(255,255,255,0.5);
+    }
+
+    .module-preview-item svg {
+      color: var(--clr-primary-300);
+      flex-shrink: 0;
+    }
+
+    .login-form-panel {
+      justify-content: center;
+    }
+
+    .login-form-inner {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body class="login-page">
+
+  <!-- ===== LEFT PANEL — BRAND ===== -->
+  <div class="login-brand-panel" role="complementary" aria-label="NLC system information">
+
+    <!-- Logo -->
+    <div class="login-brand-top">
+      <div class="login-brand-logo">
+        <div class="login-brand-logo-mark">
+         <img src="assets/nlc-logo.png"
+              alt="NLC India Limited Logo"
+              class="nlc-logo">
+        </div>
+        <div class="login-brand-logo-text">
+          <span class="org-short">NLC India Limited</span>
+          <span class="org-full">A Navratna PSU — Government of India</span>
+        </div>
+      </div>
+
+      <h2 class="login-brand-headline">
+        Integrated Gate Pass<br>Management System
+      </h2>
+      <p class="login-brand-subline">
+        Centralized access control and pass management for employees, contractors, visitors, and material movement across all NLC facilities.
+      </p>
+
+      <div class="login-modules-preview" aria-label="Available modules">
+        <div class="module-preview-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 0 0-2 2v6c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><line x1="12" y1="12" x2="12.01" y2="12"/></svg>
+          Employee Gate Pass
+        </div>
+        <div class="module-preview-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Visitor Management
+        </div>
+        <div class="module-preview-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Contractor Pass
+        </div>
+        <div class="module-preview-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+          Material Inward/Outward
+        </div>
+        <div class="module-preview-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Manager Approvals
+        </div>
+        <div class="module-preview-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Security Verification
+        </div>
+        <div class="module-preview-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Reports & Analytics
+        </div>
+        <div class="module-preview-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          Admin Control Panel
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="login-brand-middle">
+      <!-- decorative spacing -->
+    </div>
+
+    <div class="login-stats-row" aria-label="System statistics">
+      <div class="login-stat-card">
+        <div class="login-stat-value">12</div>
+        <div class="login-stat-label">Active Gates</div>
+      </div>
+      <div class="login-stat-card">
+        <div class="login-stat-value">4,800+</div>
+        <div class="login-stat-label">Employees</div>
+      </div>
+      <div class="login-stat-card">
+        <div class="login-stat-value">24/7</div>
+        <div class="login-stat-label">Monitoring</div>
+      </div>
+    </div>
+
+    <div class="login-brand-footer" style="margin-top: var(--sp-6);">
+      NLC India Ltd. · Neyveli, Tamil Nadu — Block-1 Township · IGPS v1.0.0
+    </div>
+  </div>
+
+
+  <!-- ===== RIGHT PANEL — FORM ===== -->
+  <div class="login-form-panel" role="main">
+    <div class="login-form-inner">
+
+      <div class="login-form-header">
+        <div class="system-label">Secure Sign In</div>
+        <h1>Welcome Back</h1>
+        <p>Use your NLC Employee ID or registered email to access the Gate Pass System.</p>
+      </div>
+
+      <!-- Role Selection -->
+      <div class="form-group" id="role-group">
+        <label class="form-label">Access as</label>
+        <div class="role-selector" role="radiogroup" aria-label="Select your role">
+
+          <label class="role-tab active" data-role="employee" tabindex="0" aria-checked="true">
+            <input type="radio" name="role" value="employee" checked>
+            <div class="role-tab-icon" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <span class="role-tab-label">Employee</span>
+          </label>
+
+
+
+          <label class="role-tab" data-role="security" tabindex="0" aria-checked="false">
+            <input type="radio" name="role" value="security">
+            <div class="role-tab-icon" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <span class="role-tab-label">Security</span>
+          </label>
+
+          <label class="role-tab" data-role="manager" tabindex="0" aria-checked="false">
+            <input type="radio" name="role" value="manager">
+            <div class="role-tab-icon" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <span class="role-tab-label">Manager</span>
+          </label>
+
+          <label class="role-tab" data-role="admin" tabindex="0" aria-checked="false">
+            <input type="radio" name="role" value="admin">
+            <div class="role-tab-icon" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+            </div>
+            <span class="role-tab-label">Admin</span>
+          </label>
+
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" novalidate autocomplete="off">
+
+        <!-- Employee ID / Email -->
+        <div class="form-group" id="empid-group" style="margin-top: var(--sp-5);">
+          <label for="employeeId" class="form-label">
+            Employee ID / Email <span class="required">*</span>
+          </label>
+          <div class="form-input-wrapper">
+            <span class="form-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            <input
+              type="text"
+              id="employeeId"
+              name="employee_id"
+              class="form-control"
+              placeholder="e.g. NLC-2024-0456 or you@nlcindia.com"
+              autocomplete="username"
+              maxlength="80"
+              aria-required="true"
+              aria-describedby="empid-error"
+            >
+          </div>
+          <span class="form-error" id="empid-error" role="alert">Employee ID or email is required.</span>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group" id="password-group" style="margin-top: var(--sp-5);">
+          <label for="password" class="form-label">
+            Password <span class="required">*</span>
+          </label>
+          <div class="form-input-wrapper">
+            <span class="form-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-control"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              aria-required="true"
+              aria-describedby="password-error"
+            >
+            <button
+              type="button"
+              class="form-control-action"
+              id="togglePassword"
+              aria-label="Show password"
+              title="Toggle password visibility"
+            >
+              <!-- Eye icon (show) -->
+              <svg id="eye-show" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <!-- Eye-off icon (hide) — hidden by default -->
+              <svg id="eye-hide" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+          <span class="form-error" id="password-error" role="alert">Password is required.</span>
+        </div>
+
+        <!-- Remember Me + Forgot Password -->
+        <div class="login-form-footer" style="margin-top: var(--sp-4);">
+          <label class="form-check">
+            <input type="checkbox" name="remember_me" id="rememberMe" class="form-check-input">
+            <span class="form-check-label">Keep me signed in</span>
+          </label>
+          <a href="forgot-password.html" class="login-forgot">Forgot password?</a>
+        </div>
+
+        <!-- Security Banner -->
+        <div class="security-banner" style="margin-top: var(--sp-5);" role="status">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>This is a secured NLC government portal. Unauthorized access attempts are logged and monitored.</span>
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="btn btn-primary btn-block btn-lg"
+          id="loginBtn"
+          style="margin-top: var(--sp-6);"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Sign In to Gate Pass System
+        </button>
+
+        <!-- Global form error -->
+        <div id="loginError" role="alert" aria-live="polite" style="display:none; margin-top: var(--sp-4);">
+          <div class="notice-bar warning">
+            <span class="notice-bar-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </span>
+            <span class="notice-bar-text" id="loginErrorMsg">Invalid credentials. Please try again.</span>
+          </div>
+        </div>
+
+      </form>
+
+      <!-- Session info -->
+      <div class="session-info">
+        <p class="text-xs text-muted" style="margin-bottom: var(--sp-3); font-weight: var(--fw-medium);">System Security</p>
+        <ul class="session-info-list">
+          <li class="session-info-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Session automatically expires after 8 hours of inactivity
+          </li>
+          <li class="session-info-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            All activity is audited and logged against your Employee ID
+          </li>
+          <li class="session-info-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Account is locked after 5 consecutive failed attempts
+          </li>
+        </ul>
+      </div>
+
+    </div><!-- /.login-form-inner -->
+  </div><!-- /.login-form-panel -->
+
+  <!-- Scripts -->
+  <script src="script.js?v=8"></script>
+</body>
+</html>
